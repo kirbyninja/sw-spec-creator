@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -18,6 +20,7 @@ namespace SpecCreator
         public FormSpecCreator()
         {
             InitializeComponent();
+            ShowVersionOnTitle();
 
             btnS2D.Click += (s, e) =>
             {
@@ -145,6 +148,12 @@ namespace SpecCreator
                 catch (Exception ex) { MessageBox.Show(ex.ToString()); }
                 progressBar.Value++;
             }
+        }
+
+        private void ShowVersionOnTitle()
+        {
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+            this.Text = string.Format("{0} {1}", fileVersionInfo.ProductName, fileVersionInfo.FileVersion);
         }
     }
 }
