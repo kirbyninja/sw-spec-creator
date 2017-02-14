@@ -58,6 +58,7 @@
     <Compile Include="ExportSql.cs" />
     <Compile Include="ExportWord.cs" />
     <Compile Include="FileHandlers\IFileHandler.cs" />
+    <Compile Include="FileHandlers\SqlHandler.cs" />
     <Compile Include="FormSpecCreator.cs">
       <SubType>Form</SubType>
     </Compile>
