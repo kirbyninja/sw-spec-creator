@@ -32,5 +32,22 @@ namespace SpecCreator.DataStrcutures
             foreach (var column in columns)
                 AddColumn(column);
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is WorkingTable)
+            {
+                var o = obj as WorkingTable;
+                return this.GetType().GetProperties().Where(p => p.PropertyType.IsValueType).All(p => p.GetValue(this).Equals(p.GetValue(o)))
+                    && this.WorkingColumns.SequenceEqual(o.WorkingColumns);
+            }
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return (TableName ?? string.Empty).GetHashCode();
+        }
     }
 }

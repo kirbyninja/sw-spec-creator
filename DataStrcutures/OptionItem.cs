@@ -28,6 +28,26 @@ namespace SpecCreator.DataStrcutures
         public Option Option { get; set; }
         public string Text { get; set; }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is OptionItem)
+            {
+                var o = obj as OptionItem;
+                return this.GetType().GetProperties().Where(p => p.PropertyType.IsValueType).All(p => p.GetValue(this).Equals(p.GetValue(o)))
+                    && ((this.Option == null && o.Option == null) || this.Option.OptionNo == o.Option.OptionNo);
+            }
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            if (Option == null)
+                return ItemNo.GetHashCode();
+            else
+                return Option.OptionNo.GetHashCode() ^ ItemNo.GetHashCode();
+        }
+
         public override string ToString()
         {
             return Text;

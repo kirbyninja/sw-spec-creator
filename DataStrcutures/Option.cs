@@ -47,6 +47,23 @@ namespace SpecCreator.DataStrcutures
                 AddItem(item);
         }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is Option)
+            {
+                var o = obj as Option;
+                return this.GetType().GetProperties().Where(p => p.PropertyType.IsValueType).All(p => p.GetValue(this).Equals(p.GetValue(o)))
+                    && ((this.Items == null && o.Items == null) || this.Items.SequenceEqual(o.Items));
+            }
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return OptionNo.GetHashCode();
+        }
+
         public override string ToString()
         {
             return Text;

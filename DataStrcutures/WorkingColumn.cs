@@ -28,5 +28,26 @@ namespace SpecCreator.DataStrcutures
         public string Length { get; set; }
         public Option Option { get; set; }
         public WorkingTable WorkingTable { get; set; }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is WorkingColumn)
+            {
+                var o = obj as WorkingColumn;
+                return this.GetType().GetProperties().Where(p => p.PropertyType.IsValueType).All(p => p.GetValue(this).Equals(p.GetValue(o)))
+                    && ((this.Option == null && o.Option == null) || this.Option.Equals(o.Option))
+                    && ((this.WorkingTable == null && o.WorkingTable == null) || this.WorkingTable.TableName == o.WorkingTable.TableName);
+            }
+            else
+                return false;
+        }
+
+        public override int GetHashCode()
+        {
+            if (WorkingTable == null)
+                return ColumnName.GetHashCode();
+            else
+                return (WorkingTable.TableName ?? string.Empty).GetHashCode() ^ ColumnName.GetHashCode();
+        }
     }
 }
