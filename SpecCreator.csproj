@@ -57,6 +57,7 @@
     <Compile Include="DataStrcutures\WorkingTable.cs" />
     <Compile Include="ExportSql.cs" />
     <Compile Include="ExportWord.cs" />
+    <Compile Include="FileHandlers\IFileHandler.cs" />
     <Compile Include="FormSpecCreator.cs">
       <SubType>Form</SubType>
     </Compile>
