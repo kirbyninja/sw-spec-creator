@@ -85,5 +85,15 @@ namespace UnitTest.Properties {
                 return ResourceManager.GetString("test_table", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] test_word {
+            get {
+                object obj = ResourceManager.GetObject("test_word", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

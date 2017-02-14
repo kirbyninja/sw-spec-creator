@@ -121,4 +121,7 @@
   <data name="test_table" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\test_table.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="test_word" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\test_word.docx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
 </root>
