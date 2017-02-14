@@ -1,6 +1,7 @@
 ﻿using SpecCreator.DataStrcutures;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -17,19 +18,26 @@ namespace SpecCreator.FileHandlers
 
         string IFileHandler<string>.ConvertToMeta(WorkingTable table)
         {
-            int maxWidthOfColumnName = table.WorkingColumns.Max(c => c.ColumnName.GetWidth());
-            int maxWidthOfCaption = table.WorkingColumns.Max(c => c.Caption.GetWidth());
-            string s = string.Format(Template,
-                table.Author,
-                table.Date.ToString("yyyy-MM-dd"),
-                table.TableName,
-                GetCreatTableScript(table.TableName, maxWidthOfColumnName, table.WorkingColumns),
-                GetAddConstaintScriptOfPrimaryKeys(table.TableName, table.WorkingColumns),
-                table.Name,
-                string.Join("", table.WorkingColumns.Select(c => GetInsertScriptOfField(c, maxWidthOfColumnName, maxWidthOfCaption))),
-                string.Join("\r\n", table.WorkingColumns.Where(c => c.OptionNo > 0).Select(c => GetInsertScriptOfOption(c))));
+            try
+            {
+                int maxWidthOfColumnName = table.WorkingColumns.Max(c => c.ColumnName.GetWidth());
+                int maxWidthOfCaption = table.WorkingColumns.Max(c => c.Caption.GetWidth());
+                string s = string.Format(Template,
+                    table.Author,
+                    table.Date.ToString("yyyy-MM-dd"),
+                    table.TableName,
+                    GetCreatTableScript(table.TableName, maxWidthOfColumnName, table.WorkingColumns),
+                    GetAddConstaintScriptOfPrimaryKeys(table.TableName, table.WorkingColumns),
+                    table.Name,
+                    string.Join("", table.WorkingColumns.Select(c => GetInsertScriptOfField(c, maxWidthOfColumnName, maxWidthOfCaption))),
+                    string.Join("\r\n", table.WorkingColumns.Where(c => c.OptionNo > 0).Select(c => GetInsertScriptOfOption(c))));
 
-            return s;
+                return s;
+            }
+            catch (Exception ex)
+            {
+                throw new ArgumentException("資料格式有誤", ex);
+            }
         }
 
         WorkingTable IFileHandler<string>.ConvertToTable(string sql)
@@ -39,12 +47,20 @@ namespace SpecCreator.FileHandlers
 
         string IFileHandler<string>.Load(string fileName)
         {
-            throw new NotImplementedException();
+            string sql;
+            using (var reader = new StreamReader(fileName))
+            {
+                sql = reader.ReadToEnd();
+            }
+            return sql;
         }
 
         void IFileHandler<string>.Save(string sql, string fileName)
         {
-            throw new NotImplementedException();
+            using (var writer = new StreamWriter(fileName, false))
+            {
+                writer.WriteLine(sql);
+            }
         }
 
         public WorkingTable Load(string fileName)
