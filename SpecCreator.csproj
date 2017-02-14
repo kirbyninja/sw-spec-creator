@@ -52,6 +52,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonFunc.cs" />
+    <Compile Include="DataStrcutures\OptionItem.cs" />
+    <Compile Include="DataStrcutures\WorkingColumn.cs" />
+    <Compile Include="DataStrcutures\WorkingTable.cs" />
     <Compile Include="ExportSql.cs" />
     <Compile Include="ExportWord.cs" />
     <Compile Include="FormSpecCreator.cs">
