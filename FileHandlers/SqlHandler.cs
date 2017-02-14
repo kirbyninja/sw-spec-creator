@@ -30,7 +30,7 @@ namespace SpecCreator.FileHandlers
                     GetAddConstaintScriptOfPrimaryKeys(table.TableName, table.WorkingColumns),
                     table.Name,
                     string.Join("", table.WorkingColumns.Select(c => GetInsertScriptOfField(c, maxWidthOfColumnName, maxWidthOfCaption))),
-                    string.Join("\r\n", table.WorkingColumns.Where(c => c.OptionNo > 0).Select(c => GetInsertScriptOfOption(c))));
+                    string.Join("\r\n", table.WorkingColumns.Where(c => c.Option != null).Select(c => GetInsertScriptOfOption(c.Option))));
 
                 return s;
             }
@@ -141,39 +141,39 @@ GO
                 column.ColumnNo.ToString().PadLeft(2),
                 string.Format("'{0}'", column.Caption).PadRight(maxWidthOfCaption - column.Caption.GetWidth() + column.Caption.Length + 2),
                 Convert.ToInt32(column.IsPrimaryKey),
-                column.OptionNo.ToString().PadLeft(3),
+                (column.Option == null ? 0 : column.Option.OptionNo).ToString().PadLeft(3),
                 Convert.ToInt32(IsVisible(column)),
                 GetEditorType(column));
 
             return s;
         }
 
-        private static string GetInsertScriptOfFieldOption(WorkingColumn column)
+        private static string GetInsertScriptOfFieldOption(Option option)
         {
-            if (column.OptionNo <= 0)
+            if (option == null || option.OptionNo == 0)
                 return string.Empty;
 
-            return string.Format("INSERT #appTableFieldo SELECT {0}, '{0}.{1}', 1;\r\n",
-                column.OptionNo, column.Caption);
+            return string.Format("INSERT #appTableFieldo SELECT {0}, '{1}', 1;\r\n",
+                option.OptionNo, option.Text);
         }
 
         private static string GetInsertScriptOfFieldOptionItem(OptionItem item)
         {
-            if (item.OptionNo <= 0)
+            if (item == null || item.Option == null || item.Option.OptionNo == 0)
                 return string.Empty;
 
             return string.Format("INSERT #appTableFieldoi SELECT {0}, {1}, '{2}', @loguser, @dt;\r\n",
-                    item.OptionNo, item.ItemNo, item.Text);
+                    item.Option.OptionNo, item.ItemNo, item.Text);
         }
 
-        private static string GetInsertScriptOfOption(WorkingColumn column)
+        private static string GetInsertScriptOfOption(Option option)
         {
-            if (column.OptionNo <= 0)
+            if (option == null || option.OptionNo == 0)
                 return string.Empty;
 
             return string.Format(@"{0}{1}",
-                GetInsertScriptOfFieldOption(column),
-                string.Join("", column.OptionItems.Select(i => GetInsertScriptOfFieldOptionItem(i))));
+                GetInsertScriptOfFieldOption(option),
+                string.Join("", option.Items.Select(i => GetInsertScriptOfFieldOptionItem(i))));
         }
 
         private static string GetSqlDataType(WorkingColumn column)

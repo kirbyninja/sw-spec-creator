@@ -11,16 +11,26 @@ namespace SpecCreator.DataStrcutures
         public OptionItem()
         { }
 
-        public OptionItem(int optionNo, int itemNo, string text)
+        public OptionItem(int itemNo, string text)
             : this()
         {
-            this.OptionNo = optionNo;
             this.ItemNo = itemNo;
             this.Text = text;
         }
 
+        public OptionItem(Option option, int itemNo, string text)
+            : this(itemNo, text)
+        {
+            this.Option = option;
+        }
+
         public int ItemNo { get; set; }
-        public int OptionNo { get; set; }
+        public Option Option { get; set; }
         public string Text { get; set; }
+
+        public override string ToString()
+        {
+            return Text;
+        }
     }
 }

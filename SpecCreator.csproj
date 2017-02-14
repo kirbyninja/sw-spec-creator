@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonFunc.cs" />
+    <Compile Include="DataStrcutures\Option.cs" />
     <Compile Include="DataStrcutures\OptionItem.cs" />
     <Compile Include="DataStrcutures\WorkingColumn.cs" />
     <Compile Include="DataStrcutures\WorkingTable.cs" />

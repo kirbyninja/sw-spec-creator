@@ -26,8 +26,7 @@ namespace SpecCreator.DataStrcutures
         public bool IsPrimaryKey { get; set; }
         public bool IsUnique { get; set; }
         public string Length { get; set; }
-        public IEnumerable<OptionItem> OptionItems { get; set; }
-        public int OptionNo { get; set; }
+        public Option Option { get; set; }
         public WorkingTable WorkingTable { get; set; }
     }
 }
