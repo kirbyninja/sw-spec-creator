@@ -92,7 +92,7 @@ namespace SpecCreator
 
                 dt.Rows.Add(dtRow);
                 alignName = Math.Max(alignName, dtRow["colName"].ToString().Length);
-                alignNote = Math.Max(alignNote, dtRow["colNote"].ToString().Width());
+                alignNote = Math.Max(alignNote, dtRow["colNote"].ToString().GetWidth());
             }
             ExportSql.AlignName = alignName + 2;
             ExportSql.AlignNote = alignNote + 2;

@@ -30,16 +30,9 @@ namespace SpecCreator
 
     public static class StringExtension
     {
-        public static int Width(this string s)
+        public static int GetWidth(this string s)
         {
-            int l = s.Length;
-            int intChineseFrom = Convert.ToInt32("4e00", 16);
-            int intChineseEnd = Convert.ToInt32("9fff", 16);
-            for (int i = 0; i < s.Length; i++)
-            {
-                if ((int)s[i] >= intChineseFrom && (int)s[i] <= intChineseEnd) l++;
-            }
-            return l;
+            return Encoding.GetEncoding("big5").GetByteCount(s);
         }
 
         public static string[] SplitRemoveEmpty(this string s, char sep)
@@ -100,7 +93,7 @@ namespace SpecCreator
 
         public static int Width(this object o)
         {
-            return o.ToString().Width();
+            return o.ToString().GetWidth();
         }
     }
 }
