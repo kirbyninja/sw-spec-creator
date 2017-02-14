@@ -47,19 +47,33 @@ namespace SpecCreator.FileHandlers
 
         string IFileHandler<string>.Load(string fileName)
         {
-            string sql;
-            using (var reader = new StreamReader(fileName))
+            try
             {
-                sql = reader.ReadToEnd();
+                string sql;
+                using (var reader = new StreamReader(fileName))
+                {
+                    sql = reader.ReadToEnd();
+                }
+                return sql;
             }
-            return sql;
+            catch (Exception ex)
+            {
+                throw new Exception("檔案讀取失敗", ex);
+            }
         }
 
         void IFileHandler<string>.Save(string sql, string fileName)
         {
-            using (var writer = new StreamWriter(fileName, false))
+            try
             {
-                writer.WriteLine(sql);
+                using (var writer = new StreamWriter(fileName, false))
+                {
+                    writer.WriteLine(sql);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("檔案寫入失敗", ex);
             }
         }
 

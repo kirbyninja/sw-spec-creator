@@ -43,14 +43,22 @@ namespace SpecCreator.FileHandlers
             }
             finally
             {
-                (document.Application as _Application).Quit();
+                DisposeApplication(document.Application);
             }
         }
 
         Document IFileHandler<Document>.Load(string fileName)
         {
-            var application = new Application();
-            return application.Documents.Open(fileName);
+            Application application = new Application();
+            try
+            {
+                return application.Documents.Open(fileName, false, true);
+            }
+            catch (Exception ex)
+            {
+                DisposeApplication(application);
+                throw new Exception("檔案讀取失敗", ex);
+            }
         }
 
         void IFileHandler<Document>.Save(Document document, string fileName)
@@ -62,11 +70,11 @@ namespace SpecCreator.FileHandlers
             }
             catch (Exception ex)
             {
-                throw new FormatException("文件格式有誤", ex);
+                throw new Exception("檔案寫入失敗", ex);
             }
             finally
             {
-                (document.Application as _Application).Quit();
+                DisposeApplication(document.Application);
             }
         }
 
@@ -80,6 +88,12 @@ namespace SpecCreator.FileHandlers
         {
             var t = this as IFileHandler<Document>;
             t.Save(t.ConvertToMeta(table), fileName);
+        }
+
+        private static void DisposeApplication(Application application)
+        {
+            (application as _Application).Quit();
+            application = null;
         }
 
         private static string GetCellText(Cell cell)
