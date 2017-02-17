@@ -43,20 +43,22 @@ namespace SpecCreator.FileHandlers
             }
             finally
             {
-                DisposeApplication(document.Application);
+                DisposeApplication(document);
             }
         }
 
         Document IFileHandler<Document>.Load(string fileName)
         {
             Application application = new Application();
+            Document document = null;
             try
             {
-                return application.Documents.Open(fileName, false, true);
+                document = application.Documents.Open(fileName, false, true);
+                return document;
             }
             catch (Exception ex)
             {
-                DisposeApplication(application);
+                DisposeApplication(document);
                 throw new Exception("檔案讀取失敗", ex);
             }
         }
@@ -65,8 +67,7 @@ namespace SpecCreator.FileHandlers
         {
             try
             {
-                object name = fileName;
-                document.SaveAs2(ref name);
+                document.SaveAs2(fileName);
             }
             catch (Exception ex)
             {
@@ -74,7 +75,7 @@ namespace SpecCreator.FileHandlers
             }
             finally
             {
-                DisposeApplication(document.Application);
+                DisposeApplication(document);
             }
         }
 
@@ -90,10 +91,18 @@ namespace SpecCreator.FileHandlers
             t.Save(t.ConvertToMeta(table), fileName);
         }
 
-        private static void DisposeApplication(Application application)
+        private static void DisposeApplication(Document document)
         {
-            (application as _Application).Quit();
-            application = null;
+            if (document != null)
+            {
+                var application = document.Application;
+
+                (document as _Document).Close(WdSaveOptions.wdDoNotSaveChanges);
+                document = null;
+
+                (application as _Application).Quit();
+                application = null;
+            }
         }
 
         private static string GetCellText(Cell cell)
