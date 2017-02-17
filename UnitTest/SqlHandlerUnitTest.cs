@@ -9,24 +9,30 @@ namespace UnitTest
     [TestClass]
     public class SqlHandlerUnitTest
     {
-        private static WorkingTable TestingTable = GetTestingTable();
-
         [TestMethod]
         public void TestTableToSql()
         {
             string expectedSql = Properties.Resources.test_table;
-            string actualSql = (new SqlHandler() as IFileHandler<string>).ConvertToMeta(TestingTable);
+            string actualSql = (new SqlHandler() as IFileHandler<string>).ConvertToMeta(GetTestingTable(new DateTime(2017, 2, 9)));
             Assert.AreEqual<string>(expectedSql, actualSql);
         }
 
-        private static WorkingTable GetTestingTable()
+        [TestMethod]
+        public void TestSqlToTable()
+        {
+            var expectedTable = GetTestingTable(new DateTime(2017, 2, 9));
+            var actualTable = (new SqlHandler() as IFileHandler<string>).ConvertToTable(Properties.Resources.test_table);
+            Assert.AreEqual<WorkingTable>(expectedTable, actualTable);
+        }
+
+        private static WorkingTable GetTestingTable(DateTime date)
         {
             var table = new WorkingTable()
             {
                 Name = "測試資料表",
                 TableName = "test_table",
                 Author = "Tester",
-                Date = new DateTime(2017, 2, 9),
+                Date = date,
             };
             table.AddColumns(new WorkingColumn[]
                 {
