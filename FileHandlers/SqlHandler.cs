@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace SpecCreator.FileHandlers
@@ -11,6 +12,8 @@ namespace SpecCreator.FileHandlers
     public class SqlHandler : IFileHandler<string>, IFileHandler
     {
         private static readonly string Template = Properties.Resources.SqlTemplate;
+
+        private enum TableInfo { TableName, Name, Date, Author, }
 
         public string Description { get { return "SQL Scripts"; } }
 
@@ -42,7 +45,15 @@ namespace SpecCreator.FileHandlers
 
         WorkingTable IFileHandler<string>.ConvertToTable(string sql)
         {
-            throw new NotImplementedException();
+            var table = new WorkingTable();
+            table.TableName = GetTableInfo(sql, TableInfo.TableName);
+            table.Name = GetTableInfo(sql, TableInfo.Name);
+            table.Author = GetTableInfo(sql, TableInfo.Author);
+            table.Date = DateTime.Parse(GetTableInfo(sql, TableInfo.Date));
+
+            table.AddColumns(GetWorkingColumns(sql, GetOptions(sql)));
+
+            return table;
         }
 
         string IFileHandler<string>.Load(string fileName)
@@ -190,6 +201,19 @@ GO
                 string.Join("", option.Items.Select(i => GetInsertScriptOfFieldOptionItem(i))));
         }
 
+        private static IEnumerable<Option> GetOptions(string input)
+        {
+            string pattern =
+@"INSERT\s+#appTableFieldo\s+SELECT\s+(?<opt>\d+)\s?,\s?'(.*)'\s?,\s?\d+[;\s]+(?:INSERT\s+#appTableFieldoi\s+SELECT\s+\k<opt>\s?,\s?(\d+)\s?,\s?'(.*)'\s?,\s?@loguser\s?,\s?@dt[;\s]+)+";
+            foreach (Match m in Regex.Matches(input, pattern, RegexOptions.IgnoreCase))
+            {
+                var option = new Option(int.Parse(m.Groups[4].Value), GetValidText(m.Groups[1].Value, false));
+                for (int i = 0; i < m.Groups[2].Captures.Count; ++i)
+                    option.AddItem(int.Parse(m.Groups[2].Captures[i].Value), GetValidText(m.Groups[3].Captures[i].Value, false));
+                yield return option;
+            }
+        }
+
         private static string GetSqlDataType(WorkingColumn column)
         {
             switch (column.DataType)
@@ -206,6 +230,72 @@ GO
             }
         }
 
+        private static string GetTableInfo(string input, TableInfo info)
+        {
+            string pattern = string.Empty;
+            switch (info)
+            {
+                case TableInfo.Author:
+                    pattern = @"作者[\t ]*:([^\r\n]*)[\r\n]+";
+                    break;
+
+                case TableInfo.Date:
+                    pattern = @"日期[\t ]*:([^\r\n]*)[\r\n]+";
+                    break;
+
+                case TableInfo.Name:
+                    pattern = @"INSERT\s+app_table\s+SELECT\s+@tbname\s*,\s*'(.*)'[;\s]+";
+                    break;
+
+                case TableInfo.TableName:
+                    pattern = @"SELECT\s+@tbname\s*=\s*'(.+)'";
+                    break;
+
+                default:
+                    return string.Empty;
+            }
+
+            return GetValidText(Regex.Match(input, pattern, RegexOptions.IgnoreCase).Groups[1].Value, false);
+        }
+
+        private static string GetValidText(string input, bool isQuoted = true)
+        {
+            if (isQuoted)
+                // 先去掉頭尾的空白再去掉頭尾的單引號，最後再處理字串裡的特殊字元「'」
+                return input.Trim().Remove(@"^'|'$").Replace("''", "'");
+            else
+                // 所有的單引號（不管是不是在頭尾）都是內文之一，而非SQL語法中字串的夾注號
+                return input.Trim().Replace("''", "'");
+        }
+
+        private static IEnumerable<WorkingColumn> GetWorkingColumns(string input, IEnumerable<Option> options)
+        {
+            string pattern = @"INSERT #appTableField SELECT(?:\s*((?(')'.*'|[\w@-]+))\s*,){18} @dt;";
+            foreach (Match match in Regex.Matches(input, pattern, RegexOptions.IgnoreCase))
+            {
+                Group g = match.Groups[1];
+                var column = new WorkingColumn();
+                column.ColumnName = GetValidText(g.Captures[1].Value);
+                column.ColumnNo = int.Parse(GetValidText(g.Captures[2].Value));
+                column.Caption = GetValidText(g.Captures[3].Value);
+                column.IsPrimaryKey = IsPrimaryKey(column.ColumnName, input);
+                SetDataType(column, input);
+
+                int optNo = int.Parse(GetValidText(g.Captures[10].Value));
+                column.Option = options.FirstOrDefault(opt => opt.OptionNo == optNo);
+
+                yield return column;
+            }
+        }
+
+        private static bool IsPrimaryKey(string columnName, string input)
+        {
+            string pattern = @"ADD CONSTRAINT.+PRIMARY KEY CLUSTERED\s*\(([\s\w\[\],]*)\)\s*ON \[PRIMARY\]";
+            string result = Regex.Match(input, pattern, RegexOptions.IgnoreCase).Groups[1].Value.RemoveCtrlChar();
+            var keys = result.Split(',').Select(s => s.Trim().Remove(@"^\[|\]$"));
+            return keys.Contains(columnName);
+        }
+
         private static bool IsVisible(WorkingColumn column)
         {
             switch (column.ColumnName)
@@ -220,6 +310,24 @@ GO
                 default:
                     return true;
             }
+        }
+
+        private static void SetDataType(WorkingColumn column, string input)
+        {
+            if (column == null || string.IsNullOrWhiteSpace(column.ColumnName)) return;
+
+            string pattern = string.Format(@"\[{0}\](.+)NOT NULL", column.ColumnName);
+            input = Regex.Match(input, pattern, RegexOptions.IgnoreCase).Groups[1].Value.Trim();
+
+            pattern = @"\((.*)\)";
+            Match match = Regex.Match(input, pattern);
+            if (match.Success)
+            {
+                string length = match.Groups[1].Value;
+                column.Length = string.Join(", ", length.Split(',').Select(s => s.Trim().ToUpper()));
+                input = input.Remove(pattern).Trim();
+            }
+            column.DataType = input.ToUpper();
         }
     }
 }
