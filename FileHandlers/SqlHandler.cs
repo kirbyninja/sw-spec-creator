@@ -45,15 +45,22 @@ namespace SpecCreator.FileHandlers
 
         WorkingTable IFileHandler<string>.ConvertToTable(string sql)
         {
-            var table = new WorkingTable();
-            table.TableName = GetTableInfo(sql, TableInfo.TableName);
-            table.Name = GetTableInfo(sql, TableInfo.Name);
-            table.Author = GetTableInfo(sql, TableInfo.Author);
-            table.Date = DateTime.Parse(GetTableInfo(sql, TableInfo.Date));
+            try
+            {
+                var table = new WorkingTable();
+                table.TableName = GetTableInfo(sql, TableInfo.TableName);
+                table.Name = GetTableInfo(sql, TableInfo.Name);
+                table.Author = GetTableInfo(sql, TableInfo.Author);
+                table.Date = DateTime.Parse(GetTableInfo(sql, TableInfo.Date));
 
-            table.AddColumns(GetWorkingColumns(sql, GetOptions(sql)));
+                table.AddColumns(GetWorkingColumns(sql, GetOptions(sql)));
 
-            return table;
+                return table;
+            }
+            catch (Exception ex)
+            {
+                throw new FormatException("文件格式有誤", ex);
+            }
         }
 
         string IFileHandler<string>.Load(string fileName)
