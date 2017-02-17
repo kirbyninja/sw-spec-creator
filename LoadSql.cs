@@ -54,7 +54,7 @@ namespace SpecCreator
             {
                 DataRow dr = dt.NewRow();
                 string[] detail = c.SplitRemoveEmpty(',');
-                for (int i = 0; i < detail.Length; i++) detail[i] = detail[i].RegexFilter(@"[\']").Trim();
+                for (int i = 0; i < detail.Length; i++) detail[i] = detail[i].Remove(@"[\']").Trim();
                 dr["colKey"] = false;
                 dr["colNo"] = detail[2];
                 dr["colName"] = detail[1];

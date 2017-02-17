@@ -12,7 +12,7 @@ namespace SpecCreator
     {
         public static string reg(object o, string filter)
         {
-            return o.ToString().RegexFilter(filter);
+            return o.ToString().Remove(filter);
         }
 
         public static void InitDataTable(ref DataTable dt)
@@ -42,9 +42,9 @@ namespace SpecCreator
             return r;
         }
 
-        public static string RegexFilter(this string s, string filter)
+        public static string Remove(this string input, string pattern, RegexOptions options = RegexOptions.None)
         {
-            return Regex.Replace(s, filter, "");
+            return Regex.Replace(input, pattern, "", options);
         }
 
         public static string Replace(this string s, char[] r, char n)
@@ -64,7 +64,7 @@ namespace SpecCreator
             int start = s.IndexOf(subS);
             int end = s.IndexOf(subE);
             string r = s.Substring(start + subS.Length, end - start - subS.Length);
-            return r.RegexFilter("[\x00-\x1F\x7F]");
+            return r.Remove("[\x00-\x1F\x7F]");
         }
 
         public static string RemoveLast(this string s)
@@ -80,7 +80,7 @@ namespace SpecCreator
         /// <returns></returns>
         public static string RemoveCtrlChar(this string s)
         {
-            return s.RegexFilter(@"[\x00-\x1F\x7F]");
+            return s.Remove(@"[\x00-\x1F\x7F]");
         }
     }
 

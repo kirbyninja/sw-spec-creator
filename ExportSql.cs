@@ -129,7 +129,7 @@ namespace SpecCreator
 
         private static string GetOptionSql(DataRow dr, ref int opt)
         {
-            if (!int.TryParse(dr["colLength"].ToString().RegexFilter(@"[^\d]+"), out opt))
+            if (!int.TryParse(dr["colLength"].ToString().Remove(@"[^\d]+"), out opt))
             {
                 opt = -1;
                 return string.Empty;
@@ -145,7 +145,7 @@ namespace SpecCreator
                 if (idx > 0)
                 {
                     int i;
-                    int.TryParse(s.Substring(0, idx).RegexFilter(@"[^\d]+"), out i);
+                    int.TryParse(s.Substring(0, idx).Remove(@"[^\d]+"), out i);
                     defaultOption = Math.Min(i, defaultOption);
                     tmp += "\r\n"
                         + string.Format("INSERT #appTableFieldoi SELECT {0}, {1}, '{2}', @loguser, @dt;"
