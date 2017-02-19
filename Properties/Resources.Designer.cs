@@ -95,5 +95,15 @@ namespace SpecCreator.Properties {
                 return ResourceManager.GetString("SqlTemplate", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] WordTemplate {
+            get {
+                object obj = ResourceManager.GetObject("WordTemplate", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
     }
 }

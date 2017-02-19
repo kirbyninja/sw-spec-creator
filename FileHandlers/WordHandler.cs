@@ -2,6 +2,7 @@
 using SpecCreator.DataStrcutures;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -11,13 +12,34 @@ namespace SpecCreator.FileHandlers
 {
     public class WordHandler : IFileHandler<Document>, IFileHandler
     {
+        private const string TempFolderName = ".TmpSpec";
+
         public string Description { get { return "Word Documents"; } }
 
         public string Extension { get { return "docx|doc"; } }
 
         Document IFileHandler<Document>.ConvertToMeta(WorkingTable table)
         {
-            throw new NotImplementedException();
+            Application application = new Application();
+            Document document = null;
+            try
+            {
+                string fileName = CreateTempFile(Properties.Resources.WordTemplate);
+                document = application.Documents.Open(fileName, false, false);
+                Table t = document.Tables[1];
+
+                InsertTableInfo(t, table);
+
+                for (int i = 0; i < table.WorkingColumns.Count(); ++i)
+                    InsertColumnInfo(t.Rows[i + 7], table.WorkingColumns.ElementAt(i));
+
+                return document;
+            }
+            catch (Exception ex)
+            {
+                DisposeApplication(document);
+                throw new ArgumentException("資料格式有誤", ex);
+            }
         }
 
         WorkingTable IFileHandler<Document>.ConvertToTable(Document document)
@@ -91,6 +113,27 @@ namespace SpecCreator.FileHandlers
             t.Save(t.ConvertToMeta(table), fileName);
         }
 
+        private static void AppendTextInCell(Cell cell, string text)
+        {
+            cell.Range.Text = string.Concat(GetCellText(cell), text);
+        }
+
+        private static string CreateTempFile(byte[] template)
+        {
+            var dir = Directory.CreateDirectory(string.Format(@"{0}\{1}", Directory.GetCurrentDirectory(), TempFolderName));
+            dir.Attributes = FileAttributes.Hidden;
+            string fileName = string.Format(@"{0}\{1}.docx", dir.FullName, System.Threading.Thread.CurrentThread.ManagedThreadId);
+            using (var sr = new FileStream(fileName, FileMode.Create))
+            {
+                foreach (var b in template)
+                    sr.WriteByte(b);
+            }
+            var fi = new FileInfo(fileName);
+            fi.Attributes = FileAttributes.Temporary;
+
+            return fileName;
+        }
+
         private static void DisposeApplication(Document document)
         {
             if (document != null)
@@ -103,6 +146,11 @@ namespace SpecCreator.FileHandlers
                 (application as _Application).Quit();
                 application = null;
             }
+
+            string folderPath = string.Format(@"{0}\{1}", Directory.GetCurrentDirectory(), TempFolderName);
+
+            if (Directory.Exists(folderPath))
+                Directory.Delete(folderPath, true);
         }
 
         private static string GetCellText(Cell cell)
@@ -129,6 +177,22 @@ namespace SpecCreator.FileHandlers
             return option;
         }
 
+        private static string GetOptionText(Option option)
+        {
+            if (option == null)
+                return string.Empty;
+
+            return string.Format("Opt {0}\n{1}",
+                option.OptionNo,
+                string.Join(" ", option.Items.Select(i =>
+                {
+                    if (i.Text.StartsWith(string.Format("{0}.", i.ItemNo)))
+                        return i.Text;
+                    else
+                        return string.Format("{0}.{1}", i.ItemNo, i.Text);
+                })));
+        }
+
         private static WorkingColumn GetWorkingColumn(Row row)
         {
             var column = new WorkingColumn();
@@ -150,6 +214,38 @@ namespace SpecCreator.FileHandlers
             else if (!string.IsNullOrEmpty(length))
                 column.Length = string.Join(",", length.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries));
             return column;
+        }
+
+        private static void InsertColumnInfo(Row row, WorkingColumn workingColumn)
+        {
+            var p = row.Parent;
+            if (!(p is Table)) return;
+
+            Table table = p as Table;
+
+            // 先將目前的空白行複製一行到後面
+            table.Rows.Add(row.Next);
+
+            if (workingColumn.IsPrimaryKey)
+            {
+                row.Cells[1].Range.Text = string.Format("*{0}", workingColumn.ColumnNo);
+                row.Range.Font.Color = WdColor.wdColorRed;
+            }
+            else
+                row.Cells[1].Range.Text = workingColumn.ColumnNo.ToString();
+
+            row.Cells[2].Range.Text = workingColumn.ColumnName;
+            row.Cells[3].Range.Text = workingColumn.Caption;
+            row.Cells[4].Range.Text = workingColumn.DataType;
+            row.Cells[5].Range.Text = workingColumn.Length;
+            row.Cells[6].Range.Text = GetOptionText(workingColumn.Option);
+        }
+
+        private static void InsertTableInfo(Table table, WorkingTable workingTable)
+        {
+            AppendTextInCell(table.Cell(1, 1), workingTable.Name);
+            AppendTextInCell(table.Cell(1, 2), workingTable.TableName);
+            AppendTextInCell(table.Cell(3, 3), workingTable.Author);
         }
     }
 }
