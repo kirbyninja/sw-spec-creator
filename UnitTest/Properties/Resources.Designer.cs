@@ -61,6 +61,16 @@ namespace UnitTest.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static byte[] expected_word {
+            get {
+                object obj = ResourceManager.GetObject("expected_word", resourceCulture);
+                return ((byte[])(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to --This Script Is Created By SpecCreator
         ////*---------------------------------
         /// 作者 : Tester

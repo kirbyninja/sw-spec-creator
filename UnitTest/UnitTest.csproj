@@ -76,6 +76,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\expected_word.docx" />
     <None Include="Resources\test_table.sql" />
     <None Include="Resources\test_word.docx" />
   </ItemGroup>
