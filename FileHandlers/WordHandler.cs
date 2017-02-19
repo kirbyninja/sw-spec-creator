@@ -123,8 +123,8 @@ namespace SpecCreator.FileHandlers
                 text = text.Substring(match.Value.Length);
             }
 
-            foreach (Match m in Regex.Matches(text, @" ?(-?\d+).[^ ]+ ?"))
-                option.AddItem(int.Parse(m.Groups[1].Value), m.Value);
+            foreach (Match m in Regex.Matches(text, @" ?((-?\d+).[^ ]+) ?"))
+                option.AddItem(int.Parse(m.Groups[2].Value), m.Groups[1].Value);
 
             return option;
         }
@@ -144,11 +144,11 @@ namespace SpecCreator.FileHandlers
                 var option = GetOption(row.Cells[6].Range.Text);
                 if (option.OptionNo == 0 && !string.IsNullOrEmpty(length))
                     option.OptionNo = int.Parse(length);
-                option.Text = column.Caption;
+                option.Text = string.Format("{0}.{1}", option.OptionNo, column.Caption);
                 column.Option = option;
             }
-            else
-                column.Length = string.Join(", ", length.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries));
+            else if (!string.IsNullOrEmpty(length))
+                column.Length = string.Join(",", length.Split(new[] { ' ', ',' }, StringSplitOptions.RemoveEmptyEntries));
             return column;
         }
     }

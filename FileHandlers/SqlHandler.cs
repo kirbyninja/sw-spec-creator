@@ -331,7 +331,7 @@ GO
             if (match.Success)
             {
                 string length = match.Groups[1].Value;
-                column.Length = string.Join(", ", length.Split(',').Select(s => s.Trim().ToUpper()));
+                column.Length = string.Join(",", length.Split(',').Select(s => s.Trim().ToUpper()));
                 input = input.Remove(pattern).Trim();
             }
             column.DataType = input.ToUpper();
