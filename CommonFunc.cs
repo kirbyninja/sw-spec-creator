@@ -38,7 +38,7 @@ namespace SpecCreator
         private static IFileHandler SqlHandler = new SqlHandler();
         private static IFileHandler WordHandler = new WordHandler();
 
-        public static void ConvertFiles(FileType sourceType, FileType targetType, bool isByFolder)
+        public static void ConvertFiles(FileType sourceType, FileType targetType, bool isByFolder, ProgressBar progress = null)
         {
             var reader = GetFileHandler(sourceType);
             var writer = GetFileHandler(targetType);
@@ -64,6 +64,12 @@ namespace SpecCreator
 
             var failedFiles = new List<string>();
 
+            if (progress != null)
+            {
+                progress.Maximum = totalFileCount;
+                progress.Value = 0;
+            }
+
             foreach (string sourceFile in sourceFiles)
             {
                 try
@@ -79,6 +85,9 @@ namespace SpecCreator
                         targetFileName = ShowSaveFileDialog(writer, targetFileName);
 
                     writer.Save(table, targetFileName);
+
+                    if (progress != null)
+                        ++progress.Value;
                 }
                 catch (Exception)
                 {

@@ -18,6 +18,14 @@ namespace SpecCreator
         {
             InitializeComponent();
             ShowVersionOnTitle();
+
+            btnS2D.Click += (s, e) => CommonFunc.ConvertFiles(FileType.Sql, FileType.Word, false, progressBar);
+
+            btnD2S.Click += (s, e) => CommonFunc.ConvertFiles(FileType.Word, FileType.Sql, false, progressBar);
+
+            btnBatchS2D.Click += (s, e) => CommonFunc.ConvertFiles(FileType.Sql, FileType.Word, true, progressBar);
+
+            btnBatchD2S.Click += (s, e) => CommonFunc.ConvertFiles(FileType.Word, FileType.Sql, true, progressBar);
         }
 
         private void ShowVersionOnTitle()
