@@ -31,8 +31,8 @@ namespace UnitTest
 
                 var actualArray = ReadTable(actualDoc.Tables[1]);
 
-                string diffMessage = string.Empty;
-                Assert.IsTrue(CompareArrays(expectedArray, actualArray, ref diffMessage), diffMessage);
+                string message = string.Empty;
+                Assert.IsTrue(CompareArrays(expectedArray, actualArray, ref message), message);
             }
             catch (Exception ex)
             {
@@ -55,8 +55,8 @@ namespace UnitTest
             var expectedTable = CommonFunc.GetTestingTable(new DateTime(2017, 2, 18));
             var actualTable = (new WordHandler()).Load(textFilePath);
 
-            string diffMessage = string.Empty;
-            Assert.IsTrue(CommonFunc.CompareTables(expectedTable, actualTable, ref diffMessage), diffMessage);
+            string message = string.Empty;
+            Assert.IsTrue(CommonFunc.CompareTables(expectedTable, actualTable, ref message), message);
         }
 
         private static bool CompareArrays(string[][] a, string[][] b, ref string message)
@@ -73,7 +73,7 @@ namespace UnitTest
                 {
                     if (a[i][j] != b[i][j])
                     {
-                        string diffMessage = string.Format("Row:【{0}】\r\nColumn:【{1}】\r\nExpected:【{2}】\r\nActual: 【{3}】\r\n",
+                        string diffMessage = string.Format("Row:【{0}】\r\nColumn:【{1}】\r\nExpected:【{2}】\r\nActual:【{3}】\r\n",
                           i,
                           j,
                           a[i][j] ?? "null",

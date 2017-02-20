@@ -84,7 +84,7 @@ namespace UnitTest
                        return true;
                    else
                    {
-                       string diffMessage = string.Format("【{0}】-【{1}】\r\nExpected:【{2}】\r\nActual: 【{3}】\r\n",
+                       string diffMessage = string.Format("【{0}】-【{1}】\r\nExpected:【{2}】\r\nActual:【{3}】\r\n",
                           typeof(T).Name,
                           p.Name,
                           propA ?? "null",
@@ -98,7 +98,7 @@ namespace UnitTest
         {
             if (a.Count() != b.Count())
             {
-                string diffMessage = string.Format("【{0}】\r\nExpected Length:【{1}】\r\nActual Length: 【{2}】\r\n",
+                string diffMessage = string.Format("【{0}】\r\nExpected Length:【{1}】\r\nActual Length:【{2}】\r\n",
                     typeof(T).Name,
                     a.Count(),
                     b.Count());
@@ -119,7 +119,7 @@ namespace UnitTest
                 return InputState.BothNull;
             else if (a == null ^ b == null)
             {
-                string diffMessage = string.Format("【{0}】\r\nExpected:【{1}】\r\nActual: 【{2}】\r\n",
+                string diffMessage = string.Format("【{0}】\r\nExpected:【{1}】\r\nActual:【{2}】\r\n",
                        typeof(T).Name,
                        a == null ? "null" : "not null",
                        b == null ? "null" : "not null");
