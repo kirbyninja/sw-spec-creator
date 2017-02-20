@@ -182,15 +182,18 @@ namespace SpecCreator.FileHandlers
             if (option == null)
                 return string.Empty;
 
-            return string.Format("Opt {0}\n{1}",
-                option.OptionNo,
-                string.Join(" ", option.Items.Select(i =>
-                {
-                    if (i.Text.StartsWith(string.Format("{0}.", i.ItemNo)))
-                        return i.Text;
-                    else
-                        return string.Format("{0}.{1}", i.ItemNo, i.Text);
-                })));
+            string itemString = string.Join(" ", option.Items.Select(i =>
+            {
+                if (i.Text.StartsWith(string.Format("{0}.", i.ItemNo)))
+                    return i.Text;
+                else
+                    return string.Format("{0}.{1}", i.ItemNo, i.Text);
+            }));
+
+            if (string.IsNullOrWhiteSpace(itemString))
+                return string.Format("Opt {0}", option.OptionNo);
+            else
+                return string.Format("Opt {0}\n{1}", option.OptionNo, itemString);
         }
 
         private static WorkingColumn GetWorkingColumn(Row row)
