@@ -56,8 +56,6 @@
     <Compile Include="DataStrcutures\OptionItem.cs" />
     <Compile Include="DataStrcutures\WorkingColumn.cs" />
     <Compile Include="DataStrcutures\WorkingTable.cs" />
-    <Compile Include="ExportSql.cs" />
-    <Compile Include="ExportWord.cs" />
     <Compile Include="FileHandlers\IFileHandler.cs" />
     <Compile Include="FileHandlers\SqlHandler.cs" />
     <Compile Include="FileHandlers\WordHandler.cs" />
@@ -67,8 +65,6 @@
     <Compile Include="FormSpecCreator.Designer.cs">
       <DependentUpon>FormSpecCreator.cs</DependentUpon>
     </Compile>
-    <Compile Include="LoadSql.cs" />
-    <Compile Include="LoadWord.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormSpecCreator.resx">
