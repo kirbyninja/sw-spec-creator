@@ -208,7 +208,7 @@ namespace SpecCreator.FileHandlers
                 var option = GetOption(row.Cells[6].Range.Text);
                 if (option.OptionNo <= 0 && !string.IsNullOrEmpty(length))
                     option.OptionNo = int.Parse(length);
-                option.Text = string.Format("{0}.{1}", option.OptionNo, column.Caption);
+                option.Text = column.Caption;
                 column.Option = option;
             }
             else if (!string.IsNullOrEmpty(length))

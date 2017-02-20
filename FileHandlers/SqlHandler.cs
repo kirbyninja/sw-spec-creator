@@ -185,7 +185,7 @@ GO
             if (option == null || option.OptionNo <= 0)
                 return string.Empty;
 
-            return string.Format("INSERT #appTableFieldo SELECT {0}, '{1}', 1;\r\n",
+            return string.Format("INSERT #appTableFieldo SELECT {0}, '{0}.{1}', 1;\r\n",
                 option.OptionNo, option.Text);
         }
 
@@ -211,7 +211,7 @@ GO
         private static IEnumerable<Option> GetOptions(string input)
         {
             string pattern =
-@"INSERT\s+#appTableFieldo\s+SELECT\s+(?<opt>\d+)\s?,\s?'(.*)'\s?,\s?\d+[;\s]+(?:INSERT\s+#appTableFieldoi\s+SELECT\s+\k<opt>\s?,\s?(\d+)\s?,\s?'(.*)'\s?,\s?@loguser\s?,\s?@dt[;\s]+)+";
+@"INSERT\s+#appTableFieldo\s+SELECT\s+(?<opt>\d+)\s?,\s?'(?:\k<opt>.)?(.*)'\s?,\s?\d+[;\s]+(?:INSERT\s+#appTableFieldoi\s+SELECT\s+\k<opt>\s?,\s?(\d+)\s?,\s?'(.*)'\s?,\s?@loguser\s?,\s?@dt[;\s]+)+";
             foreach (Match m in Regex.Matches(input, pattern, RegexOptions.IgnoreCase))
             {
                 var option = new Option(int.Parse(m.Groups[4].Value), GetValidText(m.Groups[1].Value, false));
