@@ -33,7 +33,7 @@ namespace SpecCreator.FileHandlers
                     GetAddConstaintScriptOfPrimaryKeys(table.TableName, table.WorkingColumns),
                     table.Name,
                     string.Join("", table.WorkingColumns.Select(c => GetInsertScriptOfField(c, maxWidthOfColumnName, maxWidthOfCaption))),
-                    string.Join("\r\n", table.WorkingColumns.Where(c => c.Option != null).Select(c => GetInsertScriptOfOption(c.Option))));
+                    string.Join("\r\n", table.WorkingColumns.Where(c => c.Option != null).Select(c => GetInsertScriptOfOption(c.Option)).Where(o => !string.IsNullOrWhiteSpace(o))));
 
                 return s;
             }
@@ -182,7 +182,7 @@ GO
 
         private static string GetInsertScriptOfFieldOption(Option option)
         {
-            if (option == null || option.OptionNo == 0)
+            if (option == null || option.OptionNo <= 0)
                 return string.Empty;
 
             return string.Format("INSERT #appTableFieldo SELECT {0}, '{1}', 1;\r\n",
@@ -191,7 +191,7 @@ GO
 
         private static string GetInsertScriptOfFieldOptionItem(OptionItem item)
         {
-            if (item == null || item.Option == null || item.Option.OptionNo == 0)
+            if (item == null || item.Option == null || item.Option.OptionNo <= 0)
                 return string.Empty;
 
             return string.Format("INSERT #appTableFieldoi SELECT {0}, {1}, '{2}', @loguser, @dt;\r\n",
@@ -200,7 +200,7 @@ GO
 
         private static string GetInsertScriptOfOption(Option option)
         {
-            if (option == null || option.OptionNo == 0)
+            if (option == null || option.OptionNo <= 0)
                 return string.Empty;
 
             return string.Format(@"{0}{1}",
@@ -289,7 +289,9 @@ GO
                 SetDataType(column, input);
 
                 int optNo = int.Parse(GetValidText(g.Captures[10].Value));
-                column.Option = options.FirstOrDefault(opt => opt.OptionNo == optNo);
+                if (column.DataType == "SMALLINT" && optNo > 0)
+                    column.Option = options.FirstOrDefault(opt => opt.OptionNo == optNo) ??
+                        new Option(optNo, column.Caption);
 
                 yield return column;
             }

@@ -160,7 +160,7 @@ namespace SpecCreator.FileHandlers
 
         private static Option GetOption(string text)
         {
-            var option = new Option();
+            var option = new Option() { OptionNo = -1 };
 
             // 先用「區隔符號」將字串切開，以確保移除所有特殊字元後不會全黏在一起
             text = string.Join(" ", Regex.Split(text, @"\r\n?|\n|\t| ").Select(s => s.RemoveCtrlChar()).Where(s => s != string.Empty));
@@ -206,7 +206,7 @@ namespace SpecCreator.FileHandlers
             if (column.DataType.ToUpper() == "SMALLINT")
             {
                 var option = GetOption(row.Cells[6].Range.Text);
-                if (option.OptionNo == 0 && !string.IsNullOrEmpty(length))
+                if (option.OptionNo <= 0 && !string.IsNullOrEmpty(length))
                     option.OptionNo = int.Parse(length);
                 option.Text = string.Format("{0}.{1}", option.OptionNo, column.Caption);
                 column.Option = option;
