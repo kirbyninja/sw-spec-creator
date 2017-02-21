@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SpecCreator.Properties {
+namespace UnitTest.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SpecCreator.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SpecCreator.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("UnitTest.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -61,47 +61,47 @@ namespace SpecCreator.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static System.Drawing.Icon converter {
+        internal static byte[] expected_word {
             get {
-                object obj = ResourceManager.GetObject("converter", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
+                object obj = ResourceManager.GetObject("expected_word", resourceCulture);
+                return ((byte[])(obj));
             }
         }
         
         /// <summary>
         ///   Looks up a localized string similar to --This Script Is Created By SpecCreator
         ////*---------------------------------
-        /// 作者 : {0}
-        /// 日期 : {1}
-        /// 內容 : {2}
+        /// 作者 : Tester
+        /// 日期 : 2017-02-09
+        /// 內容 : test_table
         ///---------------------------------*/
         ///
         ///BEGIN TRANSACTION
-        ///CREATE TABLE [dbo].[Tmp_{2}] ({3}
-        ///);
-        ///
-        ///IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N&apos;[dbo].[{2}]&apos;) AND type in (N&apos;U&apos;))
-        ///	EXEC sp_backup_data &apos;{2}&apos;, &apos;Tmp_{2}&apos;
-        ///	
-        ///IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N&apos;[dbo].[{2}]&apos;) AND type in (N&apos;U&apos;))
-        ///	DROP TABLE {2};	
-        ///	
-        ///EXEC sp_rename &apos;Tmp_{2}&apos;, &apos;{2}&apos;, &apos; [rest of string was truncated]&quot;;.
+        ///CREATE TABLE [dbo].[Tmp_test_table] (
+        ///	[key1]    	VARCHAR(20) NOT NULL,
+        ///	[key2]    	INT NOT NULL,
+        ///	[date1]   	DATE NOT NULL,
+        ///	[date2]   	DATETIME NOT NULL,
+        ///	[date3]   	SMALLDATETIME NOT NULL,
+        ///	[char1]   	CHAR(10) NOT NULL,
+        ///	[char2]   	NCHAR(10) NOT NULL,
+        ///	[char3]   	VARCHAR(10) NOT NULL,
+        ///	[char4]   	NVARCHAR(10) NOT [rest of string was truncated]&quot;;.
         /// </summary>
-        internal static string SqlTemplate {
+        internal static string test_table {
             get {
-                return ResourceManager.GetString("SqlTemplate", resourceCulture);
+                return ResourceManager.GetString("test_table", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Looks up a localized resource of type System.Byte[].
         /// </summary>
-        internal static byte[] WordTemplate {
+        internal static byte[] test_word {
             get {
-                object obj = ResourceManager.GetObject("WordTemplate", resourceCulture);
+                object obj = ResourceManager.GetObject("test_word", resourceCulture);
                 return ((byte[])(obj));
             }
         }

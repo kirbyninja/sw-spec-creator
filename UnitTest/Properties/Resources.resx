@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="converter" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\converter.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="expected_word" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\expected_word.docx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="SqlTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\template_sql.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  <data name="test_table" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\test_table.sql;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="WordTemplate" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\template_word.docx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="test_word" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\test_word.docx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>
