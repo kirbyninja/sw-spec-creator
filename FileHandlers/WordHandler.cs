@@ -25,7 +25,7 @@ namespace SpecCreator.FileHandlers
             try
             {
                 string fileName = CreateTempFile(Properties.Resources.WordTemplate);
-                document = application.Documents.Open(fileName, false, false);
+                document = application.Documents.Add(fileName);
                 Table t = document.Tables[1];
 
                 InsertTableInfo(t, table);
@@ -122,7 +122,7 @@ namespace SpecCreator.FileHandlers
         {
             var dir = Directory.CreateDirectory(string.Format(@"{0}\{1}", Directory.GetCurrentDirectory(), TempFolderName));
             dir.Attributes = FileAttributes.Hidden;
-            string fileName = string.Format(@"{0}\{1}.docx", dir.FullName, System.Threading.Thread.CurrentThread.ManagedThreadId);
+            string fileName = string.Format(@"{0}\{1}.dotx", dir.FullName, System.Threading.Thread.CurrentThread.ManagedThreadId);
             using (var sr = new FileStream(fileName, FileMode.Create))
             {
                 foreach (var b in template)
