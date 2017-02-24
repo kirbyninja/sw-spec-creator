@@ -82,7 +82,12 @@ namespace SpecCreator
                         targetFolder, table.TableName, writer.Extension.Split('|').First());
 
                     if (showSaveDialog)
+                    {
                         targetFileName = ShowSaveFileDialog(writer, targetFileName);
+
+                        if (targetFileName == null)
+                            return;
+                    }
 
                     writer.Save(table, targetFileName);
 
