@@ -208,8 +208,9 @@ GO
                 string.Join("", option.Items.Select(i => GetInsertScriptOfFieldOptionItem(i))));
         }
 
-        private static IEnumerable<Option> GetOptions(string input)
+        private static IList<Option> GetOptions(string input)
         {
+            var list = new List<Option>();
             string pattern =
 @"INSERT\s+#appTableFieldo\s+SELECT\s+(?<opt>\d+)\s?,\s?'(?:\k<opt>.)?(.*)'\s?,\s?\d+[;\s]+(?:INSERT\s+#appTableFieldoi\s+SELECT\s+\k<opt>\s?,\s?(\d+)\s?,\s?'(.*)'\s?,\s?@loguser\s?,\s?@dt[;\s]+)+";
             foreach (Match m in Regex.Matches(input, pattern, RegexOptions.IgnoreCase))
@@ -217,8 +218,9 @@ GO
                 var option = new Option(int.Parse(m.Groups[4].Value), GetValidText(m.Groups[1].Value, false));
                 for (int i = 0; i < m.Groups[2].Captures.Count; ++i)
                     option.AddItem(int.Parse(m.Groups[2].Captures[i].Value), GetValidText(m.Groups[3].Captures[i].Value, false));
-                yield return option;
+                list.Add(option);
             }
+            return list;
         }
 
         private static string GetSqlDataType(WorkingColumn column)
@@ -275,8 +277,9 @@ GO
                 return input.Trim().Replace("''", "'");
         }
 
-        private static IEnumerable<WorkingColumn> GetWorkingColumns(string input, IEnumerable<Option> options)
+        private static IList<WorkingColumn> GetWorkingColumns(string input, IEnumerable<Option> options)
         {
+            var list = new List<WorkingColumn>();
             string pattern = @"INSERT #appTableField SELECT(?:\s*((?(')'.*'|[\w@-]+))\s*,){18} @dt;";
             foreach (Match match in Regex.Matches(input, pattern, RegexOptions.IgnoreCase))
             {
@@ -293,8 +296,9 @@ GO
                     column.Option = options.FirstOrDefault(opt => opt.OptionNo == optNo) ??
                         new Option(optNo, column.Caption);
 
-                yield return column;
+                list.Add(column);
             }
+            return list;
         }
 
         private static bool IsPrimaryKey(string columnName, string input)

@@ -26,7 +26,7 @@ namespace SpecCreator.DataStrcutures
             AddItems(items);
         }
 
-        public IEnumerable<OptionItem> Items { get { return optionItems.AsReadOnly(); } }
+        public IReadOnlyList<OptionItem> Items { get { return optionItems.AsReadOnly(); } }
         public int OptionNo { get; set; }
         public string Text { get; set; }
 
