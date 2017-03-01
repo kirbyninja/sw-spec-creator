@@ -49,6 +49,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommonFunc.cs" />
+    <Compile Include="Converting\Converter.cs" />
+    <Compile Include="Converting\ConvertInfo.cs" />
+    <Compile Include="Converting\ConvertResult.cs" />
+    <Compile Include="Converting\FileType.cs" />
     <Compile Include="DataStrcutures\Option.cs" />
     <Compile Include="DataStrcutures\OptionItem.cs" />
     <Compile Include="DataStrcutures\WorkingColumn.cs" />
