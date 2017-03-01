@@ -6,17 +6,35 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace SpecCreator.FileHandlers
 {
     public class WordHandler : IFileHandler<Document>, IFileHandler
     {
-        private const string TempFolderName = ".TmpSpec";
-
         public string Description { get { return "Word Documents"; } }
 
         public string Extension { get { return "docx|doc"; } }
+
+        private string TempFileName
+        {
+            get
+            {
+                return string.Format(@"{0}\{1}-{2}.dotx",
+                    TempFolderName,
+                    this.GetHashCode(),
+                    Thread.CurrentThread.ManagedThreadId);
+            }
+        }
+
+        private string TempFolderName
+        {
+            get
+            {
+                return string.Format(@"{0}\Spec.Tmp", Path.GetTempPath());
+            }
+        }
 
         Document IFileHandler<Document>.ConvertToMeta(WorkingTable table)
         {
@@ -24,8 +42,8 @@ namespace SpecCreator.FileHandlers
             Document document = null;
             try
             {
-                string fileName = CreateTempFile(Properties.Resources.WordTemplate);
-                document = application.Documents.Open(fileName, false, false);
+                CreateTempFile(TempFileName, Properties.Resources.WordTemplate);
+                document = application.Documents.Add(TempFileName);
                 Table t = document.Tables[1];
 
                 InsertTableInfo(t, table);
@@ -37,7 +55,7 @@ namespace SpecCreator.FileHandlers
             }
             catch (Exception ex)
             {
-                DisposeApplication(document);
+                DisposeApplication(document, TempFolderName);
                 throw new ArgumentException("資料格式有誤", ex);
             }
         }
@@ -65,7 +83,7 @@ namespace SpecCreator.FileHandlers
             }
             finally
             {
-                DisposeApplication(document);
+                DisposeApplication(document, TempFolderName);
             }
         }
 
@@ -80,7 +98,7 @@ namespace SpecCreator.FileHandlers
             }
             catch (Exception ex)
             {
-                DisposeApplication(document);
+                DisposeApplication(document, TempFolderName);
                 throw new Exception("檔案讀取失敗", ex);
             }
         }
@@ -97,7 +115,7 @@ namespace SpecCreator.FileHandlers
             }
             finally
             {
-                DisposeApplication(document);
+                DisposeApplication(document, TempFolderName);
             }
         }
 
@@ -118,23 +136,23 @@ namespace SpecCreator.FileHandlers
             cell.Range.Text = string.Concat(GetCellText(cell), text);
         }
 
-        private static string CreateTempFile(byte[] template)
+        private static void CreateTempFile(string fileName, byte[] template)
         {
-            var dir = Directory.CreateDirectory(string.Format(@"{0}\{1}", Directory.GetCurrentDirectory(), TempFolderName));
-            dir.Attributes = FileAttributes.Hidden;
-            string fileName = string.Format(@"{0}\{1}.docx", dir.FullName, System.Threading.Thread.CurrentThread.ManagedThreadId);
-            using (var sr = new FileStream(fileName, FileMode.Create))
+            if (!File.Exists(fileName))
             {
-                foreach (var b in template)
-                    sr.WriteByte(b);
-            }
-            var fi = new FileInfo(fileName);
-            fi.Attributes = FileAttributes.Temporary;
+                Directory.CreateDirectory(Path.GetDirectoryName(fileName));
 
-            return fileName;
+                using (var sr = new FileStream(fileName, FileMode.Create))
+                {
+                    foreach (var b in template)
+                        sr.WriteByte(b);
+                }
+                var fi = new FileInfo(fileName);
+                fi.Attributes = FileAttributes.Temporary;
+            }
         }
 
-        private static void DisposeApplication(Document document)
+        private static void DisposeApplication(Document document, string tempFolderName)
         {
             if (document != null)
             {
@@ -143,14 +161,27 @@ namespace SpecCreator.FileHandlers
                 (document as _Document).Close(WdSaveOptions.wdDoNotSaveChanges);
                 document = null;
 
-                (application as _Application).Quit();
+                (application as _Application).Quit(WdSaveOptions.wdDoNotSaveChanges);
                 application = null;
             }
 
-            string folderPath = string.Format(@"{0}\{1}", Directory.GetCurrentDirectory(), TempFolderName);
+            if (Directory.Exists(tempFolderName))
+            {
+                foreach (var tempFileName in Directory.GetFiles(tempFolderName))
+                {
+                    try
+                    {
+                        File.Delete(tempFileName);
+                    }
+                    catch (Exception)
+                    {
+                        continue;
+                    }
+                }
 
-            if (Directory.Exists(folderPath))
-                Directory.Delete(folderPath, true);
+                if (Directory.EnumerateFiles(tempFolderName).Count() == 0)
+                    Directory.Delete(tempFolderName);
+            }
         }
 
         private static string GetCellText(Cell cell)

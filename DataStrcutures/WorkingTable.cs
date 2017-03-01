@@ -14,7 +14,7 @@ namespace SpecCreator.DataStrcutures
         public DateTime Date { get; set; }
         public string Name { get; set; }
         public string TableName { get; set; }
-        public IEnumerable<WorkingColumn> WorkingColumns { get { return workingColumns.AsReadOnly(); } }
+        public IReadOnlyList<WorkingColumn> WorkingColumns { get { return workingColumns.AsReadOnly(); } }
 
         public void AddColumn(WorkingColumn column)
         {
