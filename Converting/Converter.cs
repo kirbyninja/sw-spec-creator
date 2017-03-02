@@ -81,6 +81,11 @@ namespace SpecCreator.Converting
             MessageBox.Show(GetSummary(results, timer.Elapsed));
         }
 
+        public static Task ConvertFilesAsync(ConvertInfo convertInfo, IProgress<int> progress)
+        {
+            return ConvertFilesAsync(convertInfo.SourceType, convertInfo.TargetType, convertInfo.IsByFolder, progress);
+        }
+
         private static ConvertResult ConvertFile(IFileHandler reader, IFileHandler writer, string sourceFile, bool showSaveDialog)
         {
             try

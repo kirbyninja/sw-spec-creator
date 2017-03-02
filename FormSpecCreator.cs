@@ -39,8 +39,7 @@ namespace SpecCreator
                 foreach (var button in buttons.Keys)
                     button.Enabled = false;
 
-                await Converter.ConvertFilesAsync(convertInfo.SourceType, convertInfo.TargetType, convertInfo.IsByFolder,
-                    new Progress<int>(p => progressBar.Value = p));
+                await Converter.ConvertFilesAsync(convertInfo, new Progress<int>(p => progressBar.Value = p));
 
                 foreach (var button in buttons.Keys)
                     button.Enabled = true;
