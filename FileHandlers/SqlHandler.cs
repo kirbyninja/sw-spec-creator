@@ -200,7 +200,7 @@ GO
 
         private static string GetInsertScriptOfOption(Option option)
         {
-            if (option == null || option.OptionNo <= 0)
+            if (option == null || option.OptionNo <= 0 || option.Items.Count() == 0)
                 return string.Empty;
 
             return string.Format(@"{0}{1}",
