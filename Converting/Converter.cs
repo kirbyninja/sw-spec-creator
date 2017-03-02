@@ -95,15 +95,19 @@ namespace SpecCreator.Converting
                     ShowSaveFileDialog(writer, ref targetFile);
 
                     if (targetFile == null)
-                        return new ConvertResult(sourceFile, false, "使用者取消");
+                        throw new OperationCanceledException("使用者取消");
                 }
 
                 writer.Save(table, targetFile);
-                return new ConvertResult(sourceFile, true, string.Empty);
+                return new ConvertResult(sourceFile, TaskResult.Success, string.Empty);
+            }
+            catch (OperationCanceledException ex)
+            {
+                return new ConvertResult(sourceFile, TaskResult.Canceled, ex.Message);
             }
             catch (Exception ex)
             {
-                return new ConvertResult(sourceFile, false, ex.Message);
+                return new ConvertResult(sourceFile, TaskResult.Failure, ex.Message);
             }
         }
 
@@ -147,14 +151,24 @@ namespace SpecCreator.Converting
         private static string GetSummary(IEnumerable<ConvertResult> results, TimeSpan elapsedTime)
         {
             int total = results.Count();
-            int successCount = results.Count(r => r.IsSuccessful);
+            int successCount = results.Count(r => r.TaskResult == TaskResult.Success);
+            int failureCount = results.Count(r => r.TaskResult == TaskResult.Failure);
+            int canceledCount = results.Count(r => r.TaskResult == TaskResult.Canceled);
 
-            return string.Format("轉換完成！\r\n資料筆數：{0}\r\n成功筆數：{1}\r\n失敗筆數：{2}{3}\r\n共歷時{4:n3}秒",
+            return string.Format("資料筆數：{0}{1}{2}{3}\r\n共歷時{4:n3}秒",
                 total,
-                successCount,
-                total - successCount,
-                total > successCount
-                    ? string.Format("\r\n失敗檔案如下：\r\n{0}", string.Join("\r\n", results.Where(r => !r.IsSuccessful).Select(r => r.FileName)))
+                successCount > 0
+                    ? string.Format("\r\n成功筆數：{0}", successCount)
+                    : "",
+                failureCount > 0
+                    ? string.Format("\r\n失敗筆數：{0}\r\n失敗檔案如下：\r\n{1}",
+                        failureCount,
+                        string.Join("\r\n", results.Where(r => r.TaskResult == TaskResult.Failure).Select(r => r.FileName)))
+                    : "",
+                canceledCount > 0
+                    ? string.Format("\r\n取消筆數：{0}\r\n取消檔案如下：\r\n{1}",
+                        canceledCount,
+                        string.Join("\r\n", results.Where(r => r.TaskResult == TaskResult.Canceled).Select(r => r.FileName)))
                     : "",
                 elapsedTime.TotalSeconds);
         }

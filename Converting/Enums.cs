@@ -11,4 +11,11 @@ namespace SpecCreator.Converting
         Sql,
         Word,
     }
+
+    public enum TaskResult
+    {
+        Canceled,
+        Failure,
+        Success,
+    }
 }
