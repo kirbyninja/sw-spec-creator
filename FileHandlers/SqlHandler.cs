@@ -30,10 +30,14 @@ namespace SpecCreator.FileHandlers
                     table.Date.ToString("yyyy-MM-dd"),
                     table.TableName,
                     GetCreatTableScript(table.TableName, maxWidthOfColumnName, table.WorkingColumns),
-                    GetAddConstaintScriptOfPrimaryKeys(table.TableName, table.WorkingColumns),
+                    JoinStringChunksWithNewLine(new[]
+                    {
+                        GetAddConstaintScriptOfPrimaryKeys(table.TableName, table.WorkingColumns),
+                        GetAddConstaintScriptOfUniqueFields(table.TableName, table.WorkingColumns),
+                    }),
                     table.Name,
                     string.Join("", table.WorkingColumns.Select(c => GetInsertScriptOfField(c, maxWidthOfColumnName, maxWidthOfCaption))),
-                    string.Join("\r\n", table.WorkingColumns.Where(c => c.Option != null).Select(c => GetInsertScriptOfOption(c.Option)).Where(o => !string.IsNullOrWhiteSpace(o))));
+                    JoinStringChunksWithNewLine(table.WorkingColumns.Select(c => GetInsertScriptOfOption(c.Option))));
 
                 return s;
             }
@@ -126,6 +130,25 @@ GO
             return s;
         }
 
+        private static string GetAddConstaintScriptOfUniqueFields(string tableName, IEnumerable<WorkingColumn> columns)
+        {
+            if (!columns.Any(c => c.IsUnique))
+                return string.Empty;
+
+            string s = string.Format(
+@"ALTER TABLE [dbo].[{0}] ADD CONSTRAINT [UK_{0}] UNIQUE NONCLUSTERED
+(
+    {1}
+)
+ON [PRIMARY]
+GO
+",
+            tableName,
+            string.Join(",", columns.Where(c => c.IsUnique).Select(c => string.Format("[{0}]", c.ColumnName))));
+
+            return s;
+        }
+
         private static string GetCreatTableScript(string tableName, int maxWidthOfColumnName, IEnumerable<WorkingColumn> columns)
         {
             string s = string.Format(
@@ -172,7 +195,7 @@ GO
                 string.Format("'{0}'", column.ColumnName).PadRight(maxWidthOfColumnName + 2),
                 column.ColumnNo.ToString().PadLeft(2),
                 string.Format("'{0}'", column.Caption).PadRight(maxWidthOfCaption - column.Caption.GetWidth() + column.Caption.Length + 2),
-                Convert.ToInt32(column.IsPrimaryKey),
+                Convert.ToInt32(column.IsPrimaryKey || column.IsUnique),
                 (column.Option == null ? 0 : column.Option.OptionNo).ToString().PadLeft(3),
                 Convert.ToInt32(IsVisible(column)),
                 GetEditorType(column));
@@ -289,6 +312,7 @@ GO
                 column.ColumnNo = int.Parse(GetValidText(g.Captures[2].Value));
                 column.Caption = GetValidText(g.Captures[3].Value);
                 column.IsPrimaryKey = IsPrimaryKey(column.ColumnName, input);
+                column.IsUnique = IsUniqueField(column.ColumnName, input);
                 SetDataType(column, input);
 
                 int optNo = int.Parse(GetValidText(g.Captures[10].Value));
@@ -309,6 +333,14 @@ GO
             return keys.Contains(columnName);
         }
 
+        private static bool IsUniqueField(string columnName, string input)
+        {
+            string pattern = @"ADD\s+CONSTRAINT.+UNIQUE\s+NONCLUSTERED\s*\(([\s\w\[\],]*)\)\s*ON\s*\[PRIMARY\]";
+            string result = Regex.Match(input, pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline).Groups[1].Value.RemoveCtrlChar();
+            var keys = result.Split(',').Select(s => s.Trim().Remove(@"^\[|\]$"));
+            return keys.Contains(columnName);
+        }
+
         private static bool IsVisible(WorkingColumn column)
         {
             switch (column.ColumnName)
@@ -323,6 +355,21 @@ GO
                 default:
                     return true;
             }
+        }
+
+        private static string JoinStringChunksWithNewLine(IEnumerable<string> stringChunks)
+        {
+            string newLine = "\r\n";
+
+            if (stringChunks == null)
+                return string.Empty;
+
+            stringChunks = stringChunks.Where(chunk => !string.IsNullOrWhiteSpace(chunk));
+
+            if (stringChunks.Count() == 0)
+                return string.Empty;
+
+            return string.Concat(newLine, string.Join(newLine, stringChunks));
         }
 
         private static void SetDataType(WorkingColumn column, string input)
