@@ -55,7 +55,7 @@ namespace SpecCreator.FileHandlers
             }
             catch (Exception ex)
             {
-                DisposeApplication(document, TempFolderName);
+                DisposeApplication(document, TempFileName);
                 throw new ArgumentException("資料格式有誤", ex);
             }
         }
@@ -83,7 +83,7 @@ namespace SpecCreator.FileHandlers
             }
             finally
             {
-                DisposeApplication(document, TempFolderName);
+                DisposeApplication(document);
             }
         }
 
@@ -98,7 +98,7 @@ namespace SpecCreator.FileHandlers
             }
             catch (Exception ex)
             {
-                DisposeApplication(document, TempFolderName);
+                DisposeApplication(document);
                 throw new Exception("檔案讀取失敗", ex);
             }
         }
@@ -115,7 +115,7 @@ namespace SpecCreator.FileHandlers
             }
             finally
             {
-                DisposeApplication(document, TempFolderName);
+                DisposeApplication(document, TempFileName);
             }
         }
 
@@ -152,7 +152,7 @@ namespace SpecCreator.FileHandlers
             }
         }
 
-        private static void DisposeApplication(Document document, string tempFolderName)
+        private static void DisposeApplication(Document document, string tempFileName = null)
         {
             if (document != null)
             {
@@ -165,23 +165,8 @@ namespace SpecCreator.FileHandlers
                 application = null;
             }
 
-            if (Directory.Exists(tempFolderName))
-            {
-                foreach (var tempFileName in Directory.GetFiles(tempFolderName))
-                {
-                    try
-                    {
-                        File.Delete(tempFileName);
-                    }
-                    catch (Exception)
-                    {
-                        continue;
-                    }
-                }
-
-                if (Directory.EnumerateFiles(tempFolderName).Count() == 0)
-                    Directory.Delete(tempFolderName);
-            }
+            if (File.Exists(tempFileName))
+                File.Delete(tempFileName);
         }
 
         private static string GetCellText(Cell cell)
