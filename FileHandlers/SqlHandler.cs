@@ -303,8 +303,8 @@ GO
 
         private static bool IsPrimaryKey(string columnName, string input)
         {
-            string pattern = @"ADD\s+CONSTRAINT[\n.]+PRIMARY\s+KEY\s+CLUSTERED\s*\(([\s\w\[\],]*)\)\s*ON\s*\[PRIMARY\]";
-            string result = Regex.Match(input, pattern, RegexOptions.IgnoreCase).Groups[1].Value.RemoveCtrlChar();
+            string pattern = @"ADD\s+CONSTRAINT.+PRIMARY\s+KEY\s+CLUSTERED\s*\(([\s\w\[\],]*)\)\s*ON\s*\[PRIMARY\]";
+            string result = Regex.Match(input, pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline).Groups[1].Value.RemoveCtrlChar();
             var keys = result.Split(',').Select(s => s.Trim().Remove(@"^\[|\]$"));
             return keys.Contains(columnName);
         }
