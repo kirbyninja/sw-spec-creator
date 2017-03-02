@@ -15,7 +15,6 @@ IF EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[{2}]')
 
 EXEC sp_rename 'Tmp_{2}', '{2}', 'OBJECT'
 GO
-
 {4}
 COMMIT;
 
@@ -45,7 +44,6 @@ AND m.name = a.tablename AND c.name = a.fieldname AND m.name = '{2}';
 
 SELECT * INTO #appTableFieldo FROM app_table_field_option WHERE 1 = 0;
 SELECT * INTO #appTableFieldoi FROM app_table_field_option_item WHERE 1 = 0;
-
 {7}
 IF @owoption=1
 BEGIN

@@ -9,18 +9,18 @@ namespace SpecCreator.Converting
     public struct ConvertResult
     {
         public string FileName;
-        public bool IsSuccessful;
+        public TaskResult TaskResult;
         public string Message;
 
-        public ConvertResult(string fileName, bool isSuccessful, string message)
+        public ConvertResult(string fileName, TaskResult taskResult, string message)
         {
             this.FileName = fileName;
-            this.IsSuccessful = isSuccessful;
+            this.TaskResult = taskResult;
             this.Message = message;
         }
 
         public ConvertResult(string fileName)
-            : this(fileName, false, string.Empty)
+            : this(fileName, TaskResult.Failure, string.Empty)
         { }
     }
 }
