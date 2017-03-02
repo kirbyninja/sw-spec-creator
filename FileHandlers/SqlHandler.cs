@@ -51,7 +51,7 @@ namespace SpecCreator.FileHandlers
                 table.TableName = GetTableInfo(sql, TableInfo.TableName);
                 table.Name = GetTableInfo(sql, TableInfo.Name);
                 table.Author = GetTableInfo(sql, TableInfo.Author);
-                table.Date = DateTime.Parse(GetTableInfo(sql, TableInfo.Date));
+                table.Date = GetTableInfo(sql, TableInfo.Date).ParseDate();
 
                 table.AddColumns(GetWorkingColumns(sql, GetOptions(sql)));
 

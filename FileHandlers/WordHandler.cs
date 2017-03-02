@@ -69,7 +69,7 @@ namespace SpecCreator.FileHandlers
                 var match = new Regex(@"(:|：)(.+)");
                 workingTable.Name = match.Match(GetCellText(table.Cell(1, 1))).Groups[2].Value;
                 workingTable.TableName = match.Match(GetCellText(table.Cell(1, 2))).Groups[2].Value;
-                workingTable.Date = DateTime.Parse(match.Match(GetCellText(table.Cell(3, 2))).Groups[2].Value);
+                workingTable.Date = match.Match(GetCellText(table.Cell(3, 2))).Groups[2].Value.ParseDate();
                 workingTable.Author = match.Match(GetCellText(table.Cell(3, 3))).Groups[2].Value;
                 int rowIndex = 7;
                 while (table.Rows[rowIndex].Cells.Count >= 6 && !string.IsNullOrEmpty(GetCellText(table.Cell(rowIndex, 2))))
