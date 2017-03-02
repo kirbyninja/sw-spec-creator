@@ -39,6 +39,12 @@ namespace SpecCreator.Converting
             int totalFileCount = sourceFiles.Count();
             int fileCount = 0;
 
+            if (totalFileCount == 0)
+            {
+                MessageBox.Show("找無符合條件的檔案");
+                return;
+            }
+
             // 定義是否要讓使用者一一決定存檔位置的條件
             bool showSaveDialog = !isByFolder && totalFileCount == 1;
 
