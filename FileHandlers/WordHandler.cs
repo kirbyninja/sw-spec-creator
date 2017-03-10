@@ -207,9 +207,9 @@ namespace SpecCreator.FileHandlers
             }));
 
             if (string.IsNullOrWhiteSpace(itemString))
-                return string.Format("Opt {0}", option.OptionNo);
+                return string.Format("Option {0}", option.OptionNo);
             else
-                return string.Format("Opt {0}\n{1}", option.OptionNo, itemString);
+                return string.Format("Option {0}\n{1}", option.OptionNo, itemString);
         }
 
         private static WorkingColumn GetWorkingColumn(Row row)
