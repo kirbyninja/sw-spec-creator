@@ -8,6 +8,8 @@ namespace SpecCreator.DataStrcutures
 {
     public class WorkingColumn
     {
+        private string dataType;
+
         public WorkingColumn()
         { }
 
@@ -22,7 +24,7 @@ namespace SpecCreator.DataStrcutures
         public string Caption { get; set; }
         public string ColumnName { get; set; }
         public int ColumnNo { get; set; }
-        public string DataType { get; set; }
+        public string DataType { get { return dataType; } set { dataType = value.ToUpper() == "TINYINT" ? "SMALLINT" : value.ToUpper(); } }
         public bool IsPrimaryKey { get; set; }
         public bool IsUnique { get; set; }
         public string Length { get; set; }

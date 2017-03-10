@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Office.Interop.Word;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using SpecCreator.DataStrcutures;
 using SpecCreator.FileHandlers;
-using Microsoft.Office.Interop.Word;
 using System;
-using System.Text.RegularExpressions;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace UnitTest
 {
@@ -25,9 +25,9 @@ namespace UnitTest
                 expectedDoc = (new Application()).Documents.Open(testFilePath, false, true);
                 var expectedArray = ReadTable(expectedDoc.Tables[1]);
 
-                var workingTable = CommonFunc.GetTestingTable(new DateTime(2017, 2, 19));
+                var workingTable = CommonFunc.GetTestingTable(default(DateTime));
                 actualDoc = (new WordHandler() as IFileHandler<Document>).ConvertToMeta(workingTable);
-                ReplaceSaveDate(actualDoc, new DateTime(2017, 2, 19));
+                ReplaceSaveDate(actualDoc, new DateTime(2017, 3, 10));
 
                 var actualArray = ReadTable(actualDoc.Tables[1]);
 

@@ -87,7 +87,7 @@ namespace SpecCreator.FileHandlers
             }
         }
 
-        Document IFileHandler<Document>.Load(string fileName)
+        Document IFileHandler<Document>.LoadFile(string fileName)
         {
             Application application = new Application();
             Document document = null;
@@ -103,7 +103,7 @@ namespace SpecCreator.FileHandlers
             }
         }
 
-        void IFileHandler<Document>.Save(Document document, string fileName)
+        void IFileHandler<Document>.SaveFile(Document document, string fileName)
         {
             try
             {
@@ -122,13 +122,13 @@ namespace SpecCreator.FileHandlers
         public WorkingTable Load(string fileName)
         {
             var t = this as IFileHandler<Document>;
-            return t.ConvertToTable(t.Load(fileName));
+            return t.ConvertToTable(t.LoadFile(fileName));
         }
 
         public void Save(WorkingTable table, string fileName)
         {
             var t = this as IFileHandler<Document>;
-            t.Save(t.ConvertToMeta(table), fileName);
+            t.SaveFile(t.ConvertToMeta(table), fileName);
         }
 
         private static void AppendTextInCell(Cell cell, string text)
@@ -207,9 +207,9 @@ namespace SpecCreator.FileHandlers
             }));
 
             if (string.IsNullOrWhiteSpace(itemString))
-                return string.Format("Opt {0}", option.OptionNo);
+                return string.Format("Option {0}", option.OptionNo);
             else
-                return string.Format("Opt {0}\n{1}", option.OptionNo, itemString);
+                return string.Format("Option {0}\n{1}", option.OptionNo, itemString);
         }
 
         private static WorkingColumn GetWorkingColumn(Row row)

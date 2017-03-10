@@ -19,9 +19,9 @@ namespace SpecCreator.FileHandlers
 
     public interface IFileHandler<T> : IFileHandler
     {
-        new T Load(string fileName);
+        T LoadFile(string fileName);
 
-        void Save(T meta, string fileName);
+        void SaveFile(T meta, string fileName);
 
         T ConvertToMeta(WorkingTable table);
 
