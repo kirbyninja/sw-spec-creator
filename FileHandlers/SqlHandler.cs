@@ -67,7 +67,7 @@ namespace SpecCreator.FileHandlers
             }
         }
 
-        string IFileHandler<string>.Load(string fileName)
+        string IFileHandler<string>.LoadFile(string fileName)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace SpecCreator.FileHandlers
             }
         }
 
-        void IFileHandler<string>.Save(string sql, string fileName)
+        void IFileHandler<string>.SaveFile(string sql, string fileName)
         {
             try
             {
@@ -102,13 +102,13 @@ namespace SpecCreator.FileHandlers
         public WorkingTable Load(string fileName)
         {
             var t = this as IFileHandler<string>;
-            return t.ConvertToTable(t.Load(fileName));
+            return t.ConvertToTable(t.LoadFile(fileName));
         }
 
         public void Save(WorkingTable table, string fileName)
         {
             var t = this as IFileHandler<string>;
-            t.Save(t.ConvertToMeta(table), fileName);
+            t.SaveFile(t.ConvertToMeta(table), fileName);
         }
 
         private static string GetAddConstaintScriptOfPrimaryKeys(string tableName, IEnumerable<WorkingColumn> columns)
