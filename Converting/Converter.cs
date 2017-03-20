@@ -104,15 +104,15 @@ namespace SpecCreator.Converting
                 }
 
                 writer.Save(table, targetFile);
-                return new ConvertResult(sourceFile, TaskResult.Success, string.Empty);
+                return new ConvertResult(sourceFile, TaskResult.Success, null);
             }
             catch (OperationCanceledException ex)
             {
-                return new ConvertResult(sourceFile, TaskResult.Canceled, ex.Message);
+                return new ConvertResult(sourceFile, TaskResult.Canceled, ex);
             }
             catch (Exception ex)
             {
-                return new ConvertResult(sourceFile, TaskResult.Failure, ex.Message);
+                return new ConvertResult(sourceFile, TaskResult.Failure, ex);
             }
         }
 
@@ -168,12 +168,14 @@ namespace SpecCreator.Converting
                 failureCount > 0
                     ? string.Format("\r\n失敗筆數：{0}\r\n失敗檔案如下：\r\n{1}",
                         failureCount,
-                        string.Join("\r\n", results.Where(r => r.TaskResult == TaskResult.Failure).Select(r => r.FileName)))
+                        string.Join("\r\n", results.Where(r => r.TaskResult == TaskResult.Failure).Select(r =>
+                            string.Format("{0}\r\n原因：{1}", r.FileName, r.ExceptionMessage))))
                     : "",
                 canceledCount > 0
                     ? string.Format("\r\n取消筆數：{0}\r\n取消檔案如下：\r\n{1}",
                         canceledCount,
-                        string.Join("\r\n", results.Where(r => r.TaskResult == TaskResult.Canceled).Select(r => r.FileName)))
+                        string.Join("\r\n", results.Where(r => r.TaskResult == TaskResult.Canceled).Select(r =>
+                            string.Format("{0}\r\n原因：{1}", r.FileName, r.ExceptionMessage))))
                     : "",
                 elapsedTime.TotalSeconds);
         }
