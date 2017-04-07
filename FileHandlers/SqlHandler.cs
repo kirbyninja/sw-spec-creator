@@ -71,12 +71,14 @@ namespace SpecCreator.FileHandlers
         {
             try
             {
-                string sql;
-                using (var reader = new StreamReader(fileName))
-                {
-                    sql = reader.ReadToEnd();
-                }
-                return sql;
+                byte[] content = File.ReadAllBytes(fileName);
+
+                if (content.IsBig5Encoding())
+                    content = Encoding.Convert(Encoding.GetEncoding("big5"), Encoding.UTF8, content);
+                else if (content.IsUtf8EncodingWithBom())
+                    content = content.SubArray(3);
+
+                return Encoding.UTF8.GetString(content);
             }
             catch (Exception ex)
             {
