@@ -27,8 +27,8 @@ namespace SpecCreator
             buttons.Add(btnBatchS2D, new ConvertInfo(FileType.Sql, FileType.Word, true));
             buttons.Add(btnBatchD2S, new ConvertInfo(FileType.Word, FileType.Sql, true));
 
-            foreach (var b in buttons)
-                b.Key.Click += btnConvert_Click;
+            foreach (var button in buttons.Keys)
+                button.Click += btnConvert_Click;
         }
 
         private async void btnConvert_Click(object sender, EventArgs e)
