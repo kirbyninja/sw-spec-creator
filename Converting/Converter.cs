@@ -25,15 +25,9 @@ namespace SpecCreator.Converting
             if (reader == null || writer == null)
                 return;
 
-            IEnumerable<string> sourceFiles;
-            string targetFolder = string.Empty;
+            var sourceFiles = isByFolder ? ShowFolderDialog(reader) : ShowFileDialog(reader);
 
-            if (isByFolder)
-                sourceFiles = ShowFolderDialog(reader, ref targetFolder);
-            else
-                sourceFiles = ShowFileDialog(reader, ref targetFolder);
-
-            if (sourceFiles == null || !Directory.Exists(targetFolder))
+            if (sourceFiles == null)
                 return;
 
             int totalFileCount = sourceFiles.Count();
@@ -95,13 +89,8 @@ namespace SpecCreator.Converting
                 string targetFile = string.Format(@"{0}\{1}.{2}",
                         Path.GetDirectoryName(sourceFile), table.TableName, writer.Extension.Split('|').First());
 
-                if (showSaveDialog)
-                {
-                    ShowSaveFileDialog(writer, ref targetFile);
-
-                    if (targetFile == null)
-                        throw new OperationCanceledException("使用者取消");
-                }
+                if (showSaveDialog && ShowSaveFileDialog(writer, ref targetFile) != DialogResult.OK)
+                    throw new OperationCanceledException("使用者取消");
 
                 writer.Save(table, targetFile);
                 return new ConvertResult(sourceFile, TaskResult.Success, null);
@@ -114,14 +103,6 @@ namespace SpecCreator.Converting
             {
                 return new ConvertResult(sourceFile, TaskResult.Failure, ex);
             }
-        }
-
-        private static IEnumerable<string> FindFiles(string dirPath, IFileHandler fileHandler)
-        {
-            string pattern = GetExtensionPattern(fileHandler);
-
-            return Directory.EnumerateFiles(dirPath, "*.*", SearchOption.AllDirectories).
-                Where(fileName => Regex.IsMatch(fileName, pattern, RegexOptions.IgnoreCase));
         }
 
         private static string GetExtensionPattern(IFileHandler fileHandler)
@@ -180,7 +161,7 @@ namespace SpecCreator.Converting
                 elapsedTime.TotalSeconds);
         }
 
-        private static IEnumerable<string> ShowFileDialog(IFileHandler fileHandler, ref string folderPath)
+        private static IEnumerable<string> ShowFileDialog(IFileHandler fileHandler)
         {
             using (var openFile = new OpenFileDialog())
             {
@@ -189,30 +170,29 @@ namespace SpecCreator.Converting
                 openFile.Multiselect = true;
 
                 if (openFile.ShowDialog() == DialogResult.OK)
-                {
-                    folderPath = Directory.GetParent(openFile.FileName).FullName;
                     return openFile.FileNames;
-                }
                 else
                     return null;
             }
         }
 
-        private static IEnumerable<string> ShowFolderDialog(IFileHandler fileHandler, ref string folderPath)
+        private static IEnumerable<string> ShowFolderDialog(IFileHandler fileHandler)
         {
             using (var openFolder = new FolderBrowserDialog())
             {
                 if (openFolder.ShowDialog() == DialogResult.OK)
                 {
-                    folderPath = openFolder.SelectedPath;
-                    return FindFiles(openFolder.SelectedPath, fileHandler);
+                    string pattern = GetExtensionPattern(fileHandler);
+
+                    return Directory.EnumerateFiles(openFolder.SelectedPath, "*.*", SearchOption.AllDirectories)
+                        .Where(fileName => Regex.IsMatch(fileName, pattern, RegexOptions.IgnoreCase));
                 }
                 else
                     return null;
             }
         }
 
-        private static void ShowSaveFileDialog(IFileHandler fileHandler, ref string fileName)
+        private static DialogResult ShowSaveFileDialog(IFileHandler fileHandler, ref string fileName)
         {
             using (var saveFile = new SaveFileDialog())
             {
@@ -221,10 +201,12 @@ namespace SpecCreator.Converting
                 saveFile.InitialDirectory = Path.GetDirectoryName(fileName);
                 saveFile.FileName = Path.GetFileName(fileName);
 
-                if (saveFile.ShowDialog() == DialogResult.OK)
+                var dialogResult = saveFile.ShowDialog();
+
+                if (dialogResult == DialogResult.OK)
                     fileName = saveFile.FileName;
-                else
-                    fileName = null;
+
+                return dialogResult;
             }
         }
     }
