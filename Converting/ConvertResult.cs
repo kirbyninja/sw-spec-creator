@@ -15,6 +15,10 @@ namespace SpecCreator.Converting
             this.Exception = exception;
         }
 
+        public ConvertResult(string fileName, TaskResult taskResult)
+            : this(fileName, taskResult, null)
+        { }
+
         public ConvertResult(string fileName)
             : this(fileName, TaskResult.Failure, null)
         { }

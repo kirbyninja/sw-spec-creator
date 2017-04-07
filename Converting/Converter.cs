@@ -93,7 +93,7 @@ namespace SpecCreator.Converting
                     throw new OperationCanceledException("使用者取消");
 
                 writer.Save(table, targetFile);
-                return new ConvertResult(sourceFile, TaskResult.Success, null);
+                return new ConvertResult(sourceFile, TaskResult.Success);
             }
             catch (OperationCanceledException ex)
             {
