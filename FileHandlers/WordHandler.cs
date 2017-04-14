@@ -179,8 +179,8 @@ namespace SpecCreator.FileHandlers
             var option = new Option() { OptionNo = -1 };
 
             // 先用「區隔符號」將字串切開，以確保移除所有特殊字元後不會全黏在一起
-            text = string.Join(" ", Regex.Split(text, @"\r\n?|\n|\t| ").Select(s => s.RemoveCtrlChar()).Where(s => s != string.Empty));
-            var match = Regex.Match(text, @"^(opt|option) ?(-?\d+) ", RegexOptions.IgnoreCase);
+            text = string.Join(" ", Regex.Split(text, @"\r\n?|\n|\t|\v| ").Select(s => s.RemoveCtrlChar()).Where(s => s != string.Empty));
+            var match = Regex.Match(text, @"^(opt|option) ?(-?\d+)( |$)", RegexOptions.IgnoreCase);
             if (match.Success)
             {
                 option.OptionNo = int.Parse(match.Groups[2].Value);
