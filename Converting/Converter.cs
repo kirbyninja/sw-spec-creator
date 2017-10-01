@@ -1,5 +1,6 @@
 ﻿using SpecCreator.FileHandlers;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -14,8 +15,8 @@ namespace SpecCreator.Converting
 {
     public class Converter
     {
-        private static IFileHandler SqlHandler = new SqlHandler();
-        private static IFileHandler WordHandler = new WordHandler();
+        private static readonly IFileHandler SqlHandler = new SqlHandler();
+        private static readonly IFileHandler WordHandler = new WordHandler();
 
         public static async Task ConvertFilesAsync(FileType sourceType, FileType targetType, bool isByFolder, IProgress<int> progress)
         {
@@ -42,7 +43,7 @@ namespace SpecCreator.Converting
             // 定義是否要讓使用者一一決定存檔位置的條件
             bool showSaveDialog = !isByFolder && totalFileCount == 1;
 
-            var results = new List<ConvertResult>();
+            var results = new ConcurrentBag<ConvertResult>();
 
             progress.Report(0);
 
